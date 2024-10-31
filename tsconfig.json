@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "esModuleInterop": true,
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react",
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": false,
+    "declaration": true,
+    "declarationDir": "./",
+    "outDir": ".",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+  },
+  "include": ["./src"],
+  "exclude": ["node_modules"]
+}

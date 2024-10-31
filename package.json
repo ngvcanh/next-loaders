@@ -1,0 +1,38 @@
+{
+  "name": "next-loaders",
+  "version": "0.0.2",
+  "description": "Provider server loader for NextJS",
+  "main": "index.js",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "nextjs",
+    "loader",
+    "server",
+    "server-loader",
+    "server-action",
+    "client loader"
+  ],
+  "scripts": {
+    "build": "tsc --build --clean && tsc",
+    "typecheck": "tsc --noEmit",
+    "sec": "npx snyk test"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "react": "^18",
+    "typescript": "^5"
+  },
+  "peerDependencies": {
+    "react": "^18"
+  },
+  "files": [
+    "*.js",
+    "*.d.ts",
+    "package.json",
+    "README.md"
+  ]
+}
