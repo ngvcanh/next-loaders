@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createAction, CreateActionOptions, UseActionCallbacks } from "./create-action";
+import createAction, { CreateActionOptions, UseActionCallbacks } from "./create-action";
 import { LoaderServerAction } from "./types";
 
 export default function useAction<T, P = any>(

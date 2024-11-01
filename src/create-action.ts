@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { LoaderServerAction, LoaderServerResponse } from "./types";
+import { LoaderServerAction, LoaderServerActionRequired, LoaderServerResponse } from "./types";
 import useDebounce from "./use-debounce";
 import useThrottle from "./use-throttle";
 
@@ -16,7 +16,10 @@ export interface UseActionCallbacks<T> {
 
 export type ActionProgress = 'idle' | 'loading' | 'success' | 'error';
 
-export function createAction<T, P = any>(action: LoaderServerAction<T, P>, options?: CreateActionOptions) {
+export default function createAction<T, P = any>(
+  action: LoaderServerAction<T, P> | LoaderServerActionRequired<T, P>,
+  options?: CreateActionOptions
+) {
   return function useAction(props?: UseActionCallbacks<T>) {
     const {
       debounce: debounceTime = 0,
@@ -56,7 +59,7 @@ export function createAction<T, P = any>(action: LoaderServerAction<T, P>, optio
       abortControllerRef.current = new AbortController();
 
       try {
-        const result = await action(params, abortControllerRef.current.signal);
+        const result = await action(params as P, abortControllerRef.current.signal);
         setProgress('success');
         if (result.success) {
           onSuccess?.(result);
