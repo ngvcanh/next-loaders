@@ -1,6 +1,6 @@
 {
   "name": "next-loaders",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Provider server loader for NextJS",
   "main": "index.js",
   "license": "MIT",
@@ -15,6 +15,11 @@
     "server-action",
     "client loader"
   ],
+  "homepage": "https://github.com/ngvcanh/next-loaders#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ngvcanh/next-loaders.git"
+  },
   "scripts": {
     "build": "tsc --build --clean && tsc",
     "typecheck": "tsc --noEmit",

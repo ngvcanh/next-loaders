@@ -14,6 +14,6 @@ export interface LoaderServerFailure {
 
 export type LoaderServerResponse<T> = LoaderServerSuccess<T> | LoaderServerFailure;
 
-export interface LoaderServerAction<T> {
-  (params?: any, signal?: AbortSignal): Promise<LoaderServerResponse<T>>;
+export interface LoaderServerAction<T, P = any> {
+  (params?: P, signal?: AbortSignal): Promise<LoaderServerResponse<T>>;
 }

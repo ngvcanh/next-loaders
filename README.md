@@ -8,6 +8,8 @@
 
 - **Loader Context Provider**: Manages the state of server loader responses in a centralized context.
 - **createLoader Utility**: Creates and manages loader actions with support for debouncing, throttling, and retry mechanisms.
+- **createAction Utility**: Creates and manages server actions with support for callbacks.
+- **useAction Hook**: Simplifies the usage of server actions by wrapping the `createAction` utility.
 - **Response Utility**: Provides helper functions to create standardized success and error responses.
 - **useDebounce Hook**: Delays the execution of a callback function until after a specified delay has elapsed since the last invocation.
 - **useThrottle Hook**: Ensures a callback function is not called more often than the specified delay.
@@ -318,3 +320,152 @@ The `createLoader` utility uses the following React hooks internally:
 - `useMemo`: To memoize the loader action.
 - `useCallback`: To create memoized versions of the loader methods.
 - `useRef`: To store references to the loader state and actions.
+
+## createAction Utility
+
+The `createAction` utility is a custom hook that manages server actions in a Next.js application. It provides a way to create and manage server actions with support for callbacks. This utility can operate independently without requiring a `LoaderProvider`.
+
+### Usage
+
+#### Parameters
+
+- `name` (string): The name of the action.
+- `action` (LoaderServerAction): The server action to be executed.
+
+#### Returns
+
+- A custom hook that returns the action response and an object with methods to manage the action.
+
+#### Example
+
+```tsx
+import React, { useState } from 'react';
+import createAction from 'next-loaders/create-action';
+import { loginUser } from 'path/to/api';
+
+const LoginComponent = () => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [action, isLoading] = createAction(loginUser, {
+    onSuccess: (data) => {
+      console.log('Login successful:', data);
+    },
+    onError: (error) => {
+      console.error('Login failed:', error);
+    }
+  });
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    action.execute({ username, password });
+  };
+
+  return (
+    <div>
+      <h1>Login</h1>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Username:</label>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        </div>
+        <div>
+          <label>Password:</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+        <button type="submit" disabled={isLoading}>Login</button>
+      </form>
+    </div>
+  );
+};
+
+export default LoginComponent;
+```
+
+In this example, the `createAction` utility is used to create and manage a login action. The `action` object provides methods to execute and cancel the action, and the `onSuccess` and `onError` callbacks handle the response. The `isLoading` state indicates whether the action is currently being executed.
+
+### Implementation Details
+
+The `createAction` utility uses the following React hooks internally:
+
+- `useMemo`: To memoize the action.
+- `useCallback`: To create memoized versions of the action methods.
+- `useRef`: To store references to the action state and methods.
+- `useState`: To manage the loading state.
+
+## useAction Hook
+
+The `useAction` hook is a custom hook that simplifies the usage of server actions in a Next.js application. It wraps the `createAction` utility to provide a more convenient interface for managing server actions with support for callbacks.
+
+### Usage
+
+#### Parameters
+
+- `action` (`LoaderServerAction`): The server action to be executed.
+- `options` (`CreateActionOptions & UseActionCallbacks`): Optional properties including callbacks for success and error handling.
+
+#### Returns
+
+- A custom hook that returns an object with methods to manage the action and a loading state.
+
+#### Example
+
+```typescript
+import React, { useState } from 'react';
+import useAction from 'next-loaders/use-action';
+import { loginUser } from './action';
+
+const LoginComponent = () => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [action, isLoading] = useAction(loginUser, {
+    onSuccess: (data) => {
+      console.log('Login successful:', data);
+    },
+    onError: (error) => {
+      console.error('Login failed:', error);
+    }
+  });
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    action.execute({ username, password });
+  };
+
+  return (
+    <div>
+      <h1>Login</h1>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Username:</label>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        </div>
+        <div>
+          <label>Password:</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+        <button type="submit" disabled={isLoading}>Login</button>
+      </form>
+    </div>
+  );
+};
+
+export default LoginComponent;
+```
+
+In this example, the `useAction` hook is used to create and manage a login action. The `action` object provides methods to execute and cancel the action, and the `onSuccess` and `onError` callbacks handle the response. The `isLoading` state indicates whether the action is currently being executed.

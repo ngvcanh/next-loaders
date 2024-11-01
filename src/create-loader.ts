@@ -13,18 +13,8 @@ export interface UseLoaderProps {
   throttle?: number;
 }
 
-export type UseLoaderReturn<T> = [
-  LoaderServerResponse<T> | null,
-  {
-    load(params?: any, force?: boolean): Promise<void>;
-    cancel(): void;
-    debounce(params?: any, force?: boolean): void;
-    throttle(params?: any, force?: boolean): void;
-  }
-];
-
-export default function createLoader<T>(name: string, action: LoaderServerAction<T>) {
-  return function useLoader(props?: UseLoaderProps): UseLoaderReturn<T> {
+export default function createLoader<T, P = any>(name: string, action: LoaderServerAction<T, P>) {
+  return function useLoader(props?: UseLoaderProps) {
     const {
       retry = 0,
       delay: delayTime = 0,
@@ -93,6 +83,6 @@ export default function createLoader<T>(name: string, action: LoaderServerAction
       throttle
     }), [load, cancel, debounce, throttle]);
 
-    return [ result, loader ];
+    return [ result, loader ] as const;
   }
 }
