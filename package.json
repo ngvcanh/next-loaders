@@ -1,6 +1,6 @@
 {
   "name": "next-loaders",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Provider server loader for NextJS",
   "main": "index.js",
   "license": "MIT",

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { LoaderServerAction, LoaderServerActionRequired, LoaderServerResponse } from "./types";
+import { ActionCallbacks, ActionInferred, LoaderServerAction } from "./types";
 import useDebounce from "./use-debounce";
 import useThrottle from "./use-throttle";
 
@@ -9,18 +9,13 @@ export interface CreateActionOptions {
   throttle?: number;
 }
 
-export interface UseActionCallbacks<T> {
-  onSuccess?(result: LoaderServerResponse<T>): void;
-  onError?(e: unknown): void;
-}
-
 export type ActionProgress = 'idle' | 'loading' | 'success' | 'error';
 
-export default function createAction<T, P = any>(
-  action: LoaderServerAction<T, P> | LoaderServerActionRequired<T, P>,
+export default function createAction<T, P = never>(
+  action: LoaderServerAction<T, P>,
   options?: CreateActionOptions
 ) {
-  return function useAction(props?: UseActionCallbacks<T>) {
+  return function useAction(props?: ActionCallbacks<T>) {
     const {
       debounce: debounceTime = 0,
       throttle: throttleTime = 200,
@@ -52,14 +47,21 @@ export default function createAction<T, P = any>(
       }
     }, []);
 
-    const execute = useCallback(async (params?: P, callbacks?: UseActionCallbacks<T>) => {
+    const execute: ActionInferred<T, P> = useCallback(async (
+      ...params
+    ) => {
+      const callbacks = Array.isArray(params) && params.length > 1
+        ? params.pop() as ActionCallbacks<T>
+        : undefined;
+
       cancel();
       setProgress('loading');
       setState(true);
       abortControllerRef.current = new AbortController();
 
       try {
-        const result = await action(params as P, abortControllerRef.current.signal);
+        const args = [...(Array.isArray(params) ? params : [params]), abortControllerRef.current.signal as P];
+        const result = await action(...args as any);
         setProgress('success');
         if (result.success) {
           onSuccess?.(result);

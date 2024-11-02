@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useContext, useMemo, useRef } from "react";
-import { LoaderServerAction, LoaderServerResponse } from "./types";
+import { LoaderInferred, LoaderServerAction, LoaderServerResponse } from "./types";
 import { LoaderContext } from "./providers";
 import response from "./response";
 import useDebounce from "./use-debounce";
@@ -26,7 +26,7 @@ export default function createLoader<T, P = any>(name: string, action: LoaderSer
     const abortControllerRef = useRef<AbortController>();
     const loaded = useRef(false);
 
-    const result = context?.state?.[name] ?? null;
+    const result = (context?.state?.[name] as LoaderServerResponse<T>) ?? null;
 
     if (!context) {
       throw new Error("useLoader must be used within a LoaderProvider");
@@ -41,8 +41,10 @@ export default function createLoader<T, P = any>(name: string, action: LoaderSer
       abortControllerRef.current = undefined;
     }, []);
 
-    const load = useCallback(async (params?: any, force = false) => {
-      if ((!loaded.current && !abortControllerRef.current) || force) {
+    const load: LoaderInferred<P> = useCallback(async (...params) => {
+      const force = Array.isArray(params) && params.length > 1 ? params.pop() as boolean : false;
+
+      if ((!loaded.current && !abortControllerRef.current) || force === true) {
         cancel();
         loaded.current = true;
         abortControllerRef.current = new AbortController();
@@ -51,7 +53,8 @@ export default function createLoader<T, P = any>(name: string, action: LoaderSer
 
         while (currentRetry <= retry) {
           try {
-            const data = await action(params, abortControllerRef.current.signal);
+            const args = [ ...(Array.isArray(params) ? params : [params]), abortControllerRef.current.signal ] as const;
+            const data = await action(...args as any);
             context.setLoader(data as LoaderServerResponse<T>, name);
             return;
           } catch (e) {

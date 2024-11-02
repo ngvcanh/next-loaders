@@ -15,9 +15,20 @@ export interface LoaderServerFailure {
 export type LoaderServerResponse<T> = LoaderServerSuccess<T> | LoaderServerFailure;
 
 export interface LoaderServerAction<T, P = any> {
-  (params?: P, signal?: AbortSignal): Promise<LoaderServerResponse<T>>;
+  (...args: P extends any[] ? P : P[]): Promise<LoaderServerResponse<T>>;
 }
 
-export interface LoaderServerActionRequired<T, P = any> {
-  (params: P, signal?: AbortSignal): Promise<LoaderServerResponse<T>>;
+export interface ActionCallbacks<T> {
+  onSuccess?(result: LoaderServerResponse<T>): void;
+  onError?(e: unknown): void;
+}
+
+export interface ActionInferred<T, P = any> {
+  (): Promise<void>;
+  (...args: P extends never ? [] : [...(P extends any[] ? P : [P]), ActionCallbacks<T>?]): Promise<void>;
+}
+
+export interface LoaderInferred<P = any> {
+  (): Promise<void>;
+  (...args: P extends never ? [] :  [...(P extends any[] ? P : [P]), boolean?]): Promise<void>;
 }
