@@ -13,8 +13,18 @@ export interface UseLoaderProps {
   throttle?: number;
 }
 
+export type UseLoaderReturn<T, P = any> = [
+  LoaderServerResponse<T> | null,
+  {
+    load: LoaderInferred<P>;
+    cancel: () => void;
+    debounce: LoaderInferred<P>;
+    throttle: LoaderInferred<P>;
+  }
+];
+
 export default function createLoader<T, P = any>(name: string, action: LoaderServerAction<T, P>) {
-  return function useLoader(props?: UseLoaderProps) {
+  return function useLoader(props?: UseLoaderProps): UseLoaderReturn<T, P> {
     const {
       retry = 0,
       delay: delayTime = 0,
@@ -76,8 +86,8 @@ export default function createLoader<T, P = any>(name: string, action: LoaderSer
       }
     }, [cancel, context, delayTime, retry]);
 
-    const debounce = useDebounce(load, debounceTime);
-    const throttle = useThrottle(load, throttleTime);
+    const debounce = useDebounce(load, debounceTime) as LoaderInferred<P>;
+    const throttle = useThrottle(load, throttleTime) as LoaderInferred<P>;
 
     const loader = useMemo(() => ({
       load,
