@@ -17,9 +17,10 @@ export type UseLoaderReturn<T, P = any> = [
   LoaderServerResponse<T> | null,
   {
     load: LoaderInferred<P>;
-    cancel: () => void;
     debounce: LoaderInferred<P>;
     throttle: LoaderInferred<P>;
+    cancel: () => void;
+    reset: () => void;
   }
 ];
 
@@ -41,6 +42,15 @@ export default function createLoader<T, P = any>(name: string, action: LoaderSer
     if (!context) {
       throw new Error("useLoader must be used within a LoaderProvider");
     }
+
+    const reset = useCallback(() => {
+      loaded.current = false;
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+        abortControllerRef.current = undefined;
+      }
+      context.reset(name);
+    }, [name, context]);
 
     const cancel = useCallback(() => {
       if (!abortControllerRef.current) {
@@ -93,7 +103,8 @@ export default function createLoader<T, P = any>(name: string, action: LoaderSer
       load,
       cancel,
       debounce,
-      throttle
+      throttle,
+      reset,
     }), [load, cancel, debounce, throttle]);
 
     return [ result, loader ] as const;
