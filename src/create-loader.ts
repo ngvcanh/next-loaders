@@ -50,7 +50,7 @@ export default function createLoader<T, P = any>(name: string, action: LoaderSer
         abortControllerRef.current = undefined;
       }
       context.reset(name);
-    }, [name, context]);
+    }, [context]);
 
     const cancel = useCallback(() => {
       if (!abortControllerRef.current) {
@@ -105,7 +105,7 @@ export default function createLoader<T, P = any>(name: string, action: LoaderSer
       debounce,
       throttle,
       reset,
-    }), [load, cancel, debounce, throttle]);
+    }), [load, cancel, debounce, throttle, reset]);
 
     return [ result, loader ] as const;
   }

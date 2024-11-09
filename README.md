@@ -431,6 +431,9 @@ const LoginComponent = () => {
     },
     onError: (error) => {
       console.error('Login failed:', error);
+    },
+    onFinally: () => {
+      console.log("Finally");
     }
   });
 

@@ -21,6 +21,7 @@ export interface LoaderServerAction<T, P = any> {
 export interface ActionCallbacks<T> {
   onSuccess?(result: LoaderServerResponse<T>): void;
   onError?(e: unknown): void;
+  onFinally?(): void;
 }
 
 export interface ActionInferred<T, P = any> {

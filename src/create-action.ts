@@ -24,6 +24,7 @@ export default function createAction<T, P = never>(
     const {
       onSuccess,
       onError,
+      onFinally,
     } = props || {};
 
     const [state, setState] = useState(false);
@@ -76,8 +77,10 @@ export default function createAction<T, P = never>(
         mounted.current && setProgress("error");
       } finally {
         mounted.current && setState(false);
+        onFinally?.();
+        callbacks?.onFinally?.();
       };
-    }, [cancel, onSuccess, onError]);
+    }, [cancel, onSuccess, onError, onFinally]);
 
     const debounce = useDebounce(execute, debounceTime);
     const throttle = useThrottle(execute, throttleTime);

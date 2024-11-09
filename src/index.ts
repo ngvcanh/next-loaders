@@ -5,6 +5,7 @@ export { default as response } from "./response";
 export { default as LoaderProvider } from "./providers";
 export { default as createAction } from "./create-action";
 export { default as useAction } from "./use-action";
+export { default as useResetLoader } from "./use-reset-loader";
 export * from "./create-action";
 export * from "./providers";
 export * from "./create-loader";
